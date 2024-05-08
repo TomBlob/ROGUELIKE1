@@ -15,9 +15,11 @@ protected:
 	SceneMap			m_sceneMap;
 	size_t				m_simulationSpeed = 1;
 	size_t				m_currentFrames = 0;
+	size_t				m_width;
+	size_t				m_height;
 	bool				m_running = true;
 	bool				m_fullscreen = true;
-
+	
 	void init(const std::string& path);
 	void update();
 
@@ -33,10 +35,14 @@ public:
 
 	void quit();
 	void run();
-	void toggleFullscreen(bool fullscreen);
+	void toggleFullscreen();
 
 	sf::RenderWindow& window();
 	const Assets& assets() const;
 	bool isRunning();
 	bool isFullscreen() const;
+	void loadConfigFile(const std::string path);
+	void changeResolution(size_t width, size_t height);
+	bool sameResolutions(size_t width);
+	void updateConfigFile(std::string path);
 };

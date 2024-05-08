@@ -1,4 +1,5 @@
 #include "Scene_Menu.hpp"
+#include "Scene_Settings.hpp"
 #include "Common.hpp"
 #include "Assets.hpp"
 #include "GameEngine.hpp"
@@ -13,18 +14,16 @@ Scene_Menu::Scene_Menu(GameEngine* gameEngine)
 void Scene_Menu::init() {
 	registerAction(sf::Keyboard::W, "UP");
 	registerAction(sf::Keyboard::S, "DOWN");
-	registerAction(sf::Keyboard::D, "PLAY");
-	registerAction(sf::Keyboard::Q, "QUIT");
-	registerAction(sf::Keyboard::F11, "FULLSCREEN");
+	registerAction(sf::Keyboard::E, "SELECT");
 
-	m_title = "Game 2";
-	m_menuStrings.push_back("Level 1");
-	m_menuStrings.push_back("Level void");
+	m_title = "ROGUELIKE";
+	m_menuStrings.push_back("Settings");
+	m_menuStrings.push_back("Choose Class");
+	m_menuStrings.push_back("Start");
+	m_menuStrings.push_back("Quit");
 
-	m_levelPaths.push_back("assets/levels/level1.txt");
-
-	//m_menuText.setFont(m_game->assets().getFont("Bookos"));
-	m_menuText.setCharacterSize(64);
+	m_menuText.setFont(m_game->assets().getFont("Bookos"));
+	m_menuText.setCharacterSize(128);
 
 	sf::View view = m_game->window().getView();
 	view.setCenter(m_game->window().getSize().x / 2.0f, m_game->window().getSize().y - view.getCenter().y);
@@ -45,20 +44,24 @@ void Scene_Menu::sDoAction(const Action& action) {
 		else if (action.name() == "DOWN") {
 			m_selectedMenuIndex = (m_selectedMenuIndex + 1) % m_menuStrings.size();
 		}
-		else if (action.name() == "PLAY") {
-			//m_game->changeScene("PLAY", std::make_shared<Scene_Play>(m_game, m_levelPaths[m_selectedMenuIndex]));
-		}
-		else if (action.name() == "QUIT") {
-			onEnd();
-		}
-		else if (action.name() == "FULLSCREEN") {
-			if (m_game->isFullscreen()) {
-				m_game->window().create(sf::VideoMode(1920, 1080), "Game 2");
-				m_game->toggleFullscreen(false);
-			}
-			else {
-				m_game->window().create(sf::VideoMode(1920, 1080), "Game 2", sf::Style::Fullscreen);
-				m_game->toggleFullscreen(true);
+		else if (action.name() == "SELECT") {
+
+			switch (m_selectedMenuIndex) {
+			case 0:
+				m_game->changeScene("SETTINGS", std::make_shared<Scene_Settings>(m_game));
+				break;
+
+			case 1:
+				//m_game->changeScene("CLASS", std::make_shared<Scene_Class>(m_game));
+				break;
+
+			case 2:
+				//m_game->changeScene("SETTINGS", std::make_shared<Scene_Play>(m_game));
+				break;
+
+			case 3:
+				onEnd();
+				break;
 			}
 		}
 	}

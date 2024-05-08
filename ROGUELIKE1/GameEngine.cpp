@@ -9,7 +9,15 @@ GameEngine::GameEngine(const std::string& path) {
 void GameEngine::init(const std::string& path) {
 	m_assets.loadFromFile(path);
 
-	m_window.create(sf::VideoMode(1920, 1080), "Game 2", sf::Style::Fullscreen);
+	loadConfigFile("assets/config.txt");
+
+	if (m_fullscreen) {
+		m_window.create(sf::VideoMode(m_width, m_height), "ROGUELIKE", sf::Style::Fullscreen);
+	}
+	else {
+		m_window.create(sf::VideoMode(m_width, m_height), "ROGUELIKE");
+	}
+
 	m_window.setFramerateLimit(60);
 
 	changeScene("MENU", std::make_shared<Scene_Menu>(this));
@@ -48,8 +56,15 @@ void GameEngine::run() {
 	}
 }
 
-void GameEngine::toggleFullscreen(bool fullscreen) {
-	m_fullscreen = fullscreen;
+void GameEngine::toggleFullscreen() {
+	if (m_fullscreen) {
+		m_window.create(sf::VideoMode(m_width, m_height), "ROGUELIKE");
+		m_fullscreen = false;
+	}
+	else {
+		m_window.create(sf::VideoMode(m_width, m_height), "ROGUELIKE", sf::Style::Fullscreen);
+		m_fullscreen = true;
+	}
 }
 
 void GameEngine::sUserInput() {
@@ -93,6 +108,58 @@ void GameEngine::changeScene(const std::string& sceneName, ptr<Scene> scene, boo
 
 	if (endCurrentScene) {
 		m_sceneMap.erase(m_sceneMap.find(m_currentScene));
+	}
+}
+
+void GameEngine::loadConfigFile(const std::string path) {
+	std::ifstream file(path);
+	std::string str;
+
+	while (file.good() && str != " ") {
+		file >> str;
+		if (str == "Fullscreen") {
+			size_t fullscreen;
+			file >> fullscreen;
+			if (fullscreen == 0) {
+				m_fullscreen = false;
+			}
+			else {
+				m_fullscreen = true;
+			}
+		}
+		else if (str == "Resolution") {
+			file >> m_width >> m_height;
+		}
+	}
+}
+
+void GameEngine::updateConfigFile(std::string path) {
+	std::ofstream file(path);
+
+	if (!file.is_open()) {
+		std::cerr << "Error opening config file after saving settings" << std::endl;
+		return;
+	}
+
+	file << "Fullscreen\t" << (m_fullscreen ? 1 : 0) << std::endl;
+	file << "Resolution\t" << m_width << "\t" << m_height << std::endl;
+}
+
+bool GameEngine::sameResolutions(size_t width) {
+	if (m_width != width) return false;
+	return true;
+}
+
+void GameEngine::changeResolution(size_t width, size_t height) {
+
+	m_width = width;
+	m_height = height;
+
+	if (m_fullscreen) {
+		m_window.create(sf::VideoMode(m_width, m_height), "ROGUELIKE", sf::Style::Fullscreen);
+	}
+	else {
+		m_window.create(sf::VideoMode(m_width, m_height), "ROGUELIKE");
 	}
 }
 
