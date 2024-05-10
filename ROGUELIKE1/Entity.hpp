@@ -12,7 +12,8 @@ typedef std::tuple <
 	CBoundingBox,
 	CAnimation,
 	CGravity,
-	CState
+	CState,
+	CRectangle
 > ComponentTuple;
 
 class Entity {
@@ -30,7 +31,8 @@ class Entity {
 		CBoundingBox(),
 		CAnimation(),
 		CGravity(),
-		CState());
+		CState(),
+		CRectangle());
 
 	Entity();
 	Entity(const size_t& id, const std::string& tag);
@@ -44,6 +46,7 @@ public:
 	ptr<CAnimation>		cAnimation;
 	ptr<CGravity>		cGravity;
 	ptr<CState>			cState;
+	ptr<CRectangle>		cRectangle;
 
 	bool isActive() const;
 	const std::string& tag() const;

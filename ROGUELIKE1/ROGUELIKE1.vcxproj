@@ -53,6 +53,9 @@
   <ItemGroup>
     <Font Include="fonts\bookos.ttf" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="music\intro.mp3" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

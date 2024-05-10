@@ -16,6 +16,8 @@ protected:
 	size_t						m_selectedSettingsIndex = 0;
 	bool						m_fullscreen;
 
+	size_t						m_volumeIndex;
+
 	void init();
 	void update();
 	void sDoAction(const Action& action);

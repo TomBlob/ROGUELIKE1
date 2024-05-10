@@ -130,6 +130,9 @@ void GameEngine::loadConfigFile(const std::string path) {
 		else if (str == "Resolution") {
 			file >> m_width >> m_height;
 		}
+		else if (str == "MusicVolume") {
+			file >> m_musicVolume;
+		}
 	}
 }
 
@@ -143,6 +146,7 @@ void GameEngine::updateConfigFile(std::string path) {
 
 	file << "Fullscreen\t" << (m_fullscreen ? 1 : 0) << std::endl;
 	file << "Resolution\t" << m_width << "\t" << m_height << std::endl;
+	file << "MusicVolume\t" << m_music.getVolume() << std::endl;
 }
 
 bool GameEngine::sameResolutions(size_t width) {
@@ -165,4 +169,40 @@ void GameEngine::changeResolution(size_t width, size_t height) {
 
 void GameEngine::quit() {
 	m_running = false;
+}
+
+void GameEngine::resetMusicInit() {
+	m_musicInitialized = false;
+}
+
+bool GameEngine::getMusicInitialized() {
+	return m_musicInitialized;
+}
+
+void GameEngine::setupMusic(std::string path, bool loop) {
+	if (!m_music.openFromFile(path)) {
+		std::cerr << "Cannot open music from file : " << path << std::endl;
+	}
+	m_music.setLoop(loop);
+	m_music.setVolume(m_musicVolume);
+	m_music.play();
+	m_musicInitialized = true;
+}
+
+void GameEngine::changeMusicVolume(float volume){
+	m_music.setVolume(volume);
+	m_musicVolume = volume;
+}
+
+float GameEngine::getMusicVolume() {
+	return m_musicVolume;
+}
+
+void GameEngine::toggleMusic() {
+	if (m_music.getStatus() == sf::Music::Playing) {
+		m_music.pause();
+	}
+	else {
+		m_music.play();
+	}
 }

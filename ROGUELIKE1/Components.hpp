@@ -82,3 +82,20 @@ public:
 	CState() {}
 	CState(const std::string& s) : state(s) {}
 };
+
+class CRectangle : public Component {
+
+public :
+	sf::RectangleShape	rectangle;
+	float				transparency = 0;
+
+	CRectangle() {}
+	CRectangle(sf::Vector2f xy, sf::Color fillColor, sf::Color outlineColor, int thickness)
+		: rectangle(xy) {
+
+		rectangle.setFillColor(fillColor);
+		rectangle.setOutlineColor(outlineColor);
+		rectangle.setOutlineThickness(thickness);
+		rectangle.setOrigin(xy.x / 2.0f, xy.y / 2.0f);
+	}
+};

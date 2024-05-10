@@ -12,6 +12,11 @@ Scene_Menu::Scene_Menu(GameEngine* gameEngine)
 }
 
 void Scene_Menu::init() {
+
+	if (!m_game->getMusicInitialized()) {
+		m_game->setupMusic("music/menuMusic.mp3", true);
+	}
+
 	registerAction(sf::Keyboard::W, "UP");
 	registerAction(sf::Keyboard::S, "DOWN");
 	registerAction(sf::Keyboard::E, "SELECT");

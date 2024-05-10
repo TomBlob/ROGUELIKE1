@@ -12,6 +12,7 @@ Scene_Settings::Scene_Settings(GameEngine* gameEngine)
 }
 
 void Scene_Settings::init() {
+	m_volumeIndex = m_game->getMusicVolume()/10;
 	m_fullscreen = m_game->isFullscreen();
 	if (m_game->sameResolutions(m_resolution[0].first)) {
 		m_resolutionIndex = 0;
@@ -32,8 +33,16 @@ void Scene_Settings::init() {
 	m_title = "SETTINGS";
 	m_SettingsStrings.push_back("Fullscreen");
 	m_SettingsStrings.push_back("Change Resolution");
+	m_SettingsStrings.push_back("Change Music Volume");
 	m_SettingsStrings.push_back("Apply");
 	m_SettingsStrings.push_back("Quit to menu");
+
+	for (int i = 0; i < 10; i++) {
+		auto box = m_entityManager.addEntity("volumeBox");
+
+		sf::Vector2f tempVec(20.0f, 20.0f);
+		box->addComponent<CRectangle>(tempVec, sf::Color::Transparent, sf::Color::White, 1);
+	}
 
 	m_SettingsText.setFont(m_game->assets().getFont("Bookos"));
 	m_SettingsText.setCharacterSize(128);
@@ -60,23 +69,28 @@ void Scene_Settings::sDoAction(const Action& action) {
 		else if (action.name() == "SELECT") {
 			switch (m_selectedSettingsIndex) {
 			case 0:
-				m_game->toggleFullscreen();
 				break;
 			case 1:
 				break;
 			case 2:
+				break;
+			case 3:
+				//APPLY SETTINGS
 				if (!m_game->sameResolutions(m_resolution[m_resolutionIndex].first)) {
 					m_game->changeResolution(m_resolution[m_resolutionIndex].first, m_resolution[m_resolutionIndex].second);
 				}
 				if (m_game->isFullscreen() != m_fullscreen) {
 					m_game->toggleFullscreen();
 				}
+
+				m_game->changeMusicVolume(m_volumeIndex * 10);
+
 				m_game->updateConfigFile("assets/config.txt");
 				m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
 				
 				break;
 
-			case 3:
+			case 4:
 				m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
 				break;
 			}
@@ -92,6 +106,18 @@ void Scene_Settings::sDoAction(const Action& action) {
 			}
 			else if (action.name() == "RIGHT") {
 				m_resolutionIndex = (m_resolutionIndex + 1) % m_resolution.size();
+			}
+		}
+		else if (m_selectedSettingsIndex == 2) {
+			if (action.name() == "LEFT") {
+				if (m_volumeIndex > 0) {
+					m_volumeIndex--;
+				}
+			}
+			else if (action.name() == "RIGHT") {
+				if (m_volumeIndex < 10) {
+					m_volumeIndex++;
+				}
 			}
 		}
 	}
@@ -155,6 +181,25 @@ void Scene_Settings::sRender() {
 	}
 	m_SettingsText.setPosition(m_game->window().getSize().x / 2 + 30, m_game->window().getSize().y / 5);
 	m_game->window().draw(m_SettingsText);
+
+	// render 10 boxes for volume control setting
+	int boxCounter = 0;
+	for (auto box : m_entityManager.getEntities()) {
+		if (box->tag() == "volumeBox") {
+			auto boxRect = box->getComponent<CRectangle>();
+			if (m_volumeIndex > boxCounter) {
+				boxRect.rectangle.setFillColor(sf::Color::White);
+			}
+			else {
+				boxRect.rectangle.setFillColor(sf::Color::Transparent);
+			}
+			boxRect.rectangle.setPosition(m_game->window().getSize().x / 2.0f + 25 + boxCounter * 30, m_game->window().getSize().y / 5 + 135);
+			m_game->window().draw(boxRect.rectangle);
+			boxCounter++;
+		}
+	}
+
+
 
 	m_game->window().display();
 }

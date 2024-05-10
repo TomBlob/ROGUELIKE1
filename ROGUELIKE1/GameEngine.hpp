@@ -19,6 +19,10 @@ protected:
 	size_t				m_height;
 	bool				m_running = true;
 	bool				m_fullscreen = true;
+
+	sf::Music			m_music;
+	float				m_musicVolume;
+	bool				m_musicInitialized = false;
 	
 	void init(const std::string& path);
 	void update();
@@ -45,4 +49,11 @@ public:
 	void changeResolution(size_t width, size_t height);
 	bool sameResolutions(size_t width);
 	void updateConfigFile(std::string path);
+
+	void resetMusicInit();
+	bool getMusicInitialized();
+	void setupMusic(std::string path, bool loop);
+	void changeMusicVolume(float volume);
+	float getMusicVolume();
+	void toggleMusic();
 };
