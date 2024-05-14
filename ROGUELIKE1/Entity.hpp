@@ -6,6 +6,7 @@
 class EntityManager;
 
 typedef std::tuple <
+	CId,
 	CTransform,
 	CLifespan,
 	CInput,
@@ -25,6 +26,7 @@ class Entity {
 	size_t			m_id = 0;
 	std::string		m_tag = "default";
 	ComponentTuple	m_components = std::make_tuple(
+		CId(),
 		CTransform(),
 		CLifespan(100, 100),
 		CInput(),
@@ -39,6 +41,7 @@ class Entity {
 
 public:
 
+	ptr<CId>			cId;
 	ptr<CTransform>		cShape;
 	ptr<CLifespan>		cLifespan;
 	ptr<CInput>			cInput;

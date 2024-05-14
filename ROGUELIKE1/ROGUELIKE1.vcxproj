@@ -21,7 +21,6 @@
   <ItemGroup>
     <Text Include="assets\assets.txt" />
     <Text Include="assets\config.txt" />
-    <Text Include="levels\level1.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Action.cpp" />
@@ -33,6 +32,7 @@
     <ClCompile Include="roguelike1.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Scene_Floor.cpp" />
     <ClCompile Include="Scene_Menu.cpp" />
     <ClCompile Include="Scene_Settings.cpp" />
   </ItemGroup>
@@ -47,6 +47,7 @@
     <ClInclude Include="GameEngine.hpp" />
     <ClInclude Include="Physics.hpp" />
     <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="Scene_Floor.hpp" />
     <ClInclude Include="Scene_Menu.hpp" />
     <ClInclude Include="Scene_Settings.hpp" />
   </ItemGroup>
@@ -54,7 +55,10 @@
     <Font Include="fonts\bookos.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <Media Include="music\intro.mp3" />
+    <Media Include="music\menuMusic.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\tiles\greyBrick.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

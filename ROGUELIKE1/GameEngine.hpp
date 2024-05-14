@@ -20,6 +20,8 @@ protected:
 	bool				m_running = true;
 	bool				m_fullscreen = true;
 
+	int					m_currentFloor = 1;
+
 	sf::Music			m_music;
 	float				m_musicVolume;
 	bool				m_musicInitialized = false;
@@ -55,5 +57,9 @@ public:
 	void setupMusic(std::string path, bool loop);
 	void changeMusicVolume(float volume);
 	float getMusicVolume();
+	void stopMusic();
 	void toggleMusic();
+
+	int getCurrentFloor();
+	std::string generateFloor(int floorNum);
 };

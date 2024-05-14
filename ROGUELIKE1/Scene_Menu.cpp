@@ -1,5 +1,6 @@
 #include "Scene_Menu.hpp"
 #include "Scene_Settings.hpp"
+#include "Scene_Floor.hpp"
 #include "Common.hpp"
 #include "Assets.hpp"
 #include "GameEngine.hpp"
@@ -61,9 +62,11 @@ void Scene_Menu::sDoAction(const Action& action) {
 				break;
 
 			case 2:
-				//m_game->changeScene("SETTINGS", std::make_shared<Scene_Play>(m_game));
+			{
+				std::string title = "FLOOR" + std::to_string(m_game->getCurrentFloor());
+				m_game->changeScene(title, std::make_shared<Scene_Floor>(m_game, m_game->generateFloor(m_game->getCurrentFloor())));
 				break;
-
+			}
 			case 3:
 				onEnd();
 				break;

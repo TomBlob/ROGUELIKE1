@@ -1,1 +1,13 @@
+Texture		TexGreyBrick			assets/tiles/greyBrick.png
+Texture		TexPauseButton			assets/buttons/pauseButton.png
+Texture		TexGuyStand				assets/player/guyStand.png
+Texture		TexGuyWalkDown			assets/player/guyWalkDown.png
+Texture		TexGuyWalkSide			assets/player/guyWalkSide.png
+Texture		TexGuyWalkUp			assets/player/guyWalkUp.png
+Animation	GuyStand		TexGuyStand		1	0
+Animation	GuyWalkDown		TexGuyWalkDown	3	10
+Animation	GuyWalkSide		TexGuyWalkSide	3	10
+Animation	GuyWalkUp		TexGuyWalkUp	3	10
+Animation	PauseButton		TexPauseButton	1	0
+Animation	GreyBrick		TexGreyBrick	1	0
 Font	Bookos	fonts/bookos.ttf

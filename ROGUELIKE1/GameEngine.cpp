@@ -147,6 +147,8 @@ void GameEngine::updateConfigFile(std::string path) {
 	file << "Fullscreen\t" << (m_fullscreen ? 1 : 0) << std::endl;
 	file << "Resolution\t" << m_width << "\t" << m_height << std::endl;
 	file << "MusicVolume\t" << m_music.getVolume() << std::endl;
+
+	file.close();
 }
 
 bool GameEngine::sameResolutions(size_t width) {
@@ -198,6 +200,10 @@ float GameEngine::getMusicVolume() {
 	return m_musicVolume;
 }
 
+void GameEngine::stopMusic() {
+	m_music.stop();
+}
+
 void GameEngine::toggleMusic() {
 	if (m_music.getStatus() == sf::Music::Playing) {
 		m_music.pause();
@@ -205,4 +211,40 @@ void GameEngine::toggleMusic() {
 	else {
 		m_music.play();
 	}
+}
+
+int GameEngine::getCurrentFloor()
+{
+	return m_currentFloor;
+}
+
+std::string GameEngine::generateFloor(int floorNum)
+{
+	std::string path = "levels/floor" + std::to_string(floorNum) + ".txt";
+	std::ofstream file(path);
+
+	if (!file.is_open()) {
+		std::cerr << "Error opening file : " + path << std::endl;
+		exit(1);
+	}
+
+	for (int i = 0; i < 51; i++) {
+		for (int j = 0; j < 90; j++) {
+			if (i == 0 || i == 16 || i == 17 || i == 33 || i == 34 || i == 50
+				|| j == 0 || j == 29 || j == 30 || j == 59 || j == 60 || j == 89) {
+				file << "Tile\tGreyBrick\t" << j << "\t" << i << std::endl;
+			}
+		}
+	}
+
+	for (int k = 0; k < 2; k++) {
+		file << "Button\tPauseButton\t" << k;
+	}
+
+	file << "Player\t" << (m_window.getSize().x / 64.0f) / 2.0f << "\t" << (m_window.getSize().y / 64.0f) / 2.0f << "\t"
+		<< "32\t48\t5\t10";
+
+	file.close();
+
+	return path;
 }

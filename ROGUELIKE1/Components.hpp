@@ -9,6 +9,16 @@ public:
 	bool has = false;
 };
 
+class CId : public Component {
+
+public:
+	int				id = 0;
+
+	CId() {}
+	CId(const int id)
+		: id(id) {}
+};
+
 class CTransform : public Component {
 
 public:
@@ -78,7 +88,7 @@ public:
 
 class CState : public Component {
 public:
-	std::string state = "jumping";
+	std::string state;
 	CState() {}
 	CState(const std::string& s) : state(s) {}
 };
