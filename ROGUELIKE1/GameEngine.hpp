@@ -24,6 +24,7 @@ protected:
 
 	sf::Music			m_music;
 	float				m_musicVolume;
+	float				m_savedMusicVolume;
 	bool				m_musicInitialized = false;
 	
 	void init(const std::string& path);
@@ -56,6 +57,8 @@ public:
 	bool getMusicInitialized();
 	void setupMusic(std::string path, bool loop);
 	void changeMusicVolume(float volume);
+	void changeSavedMusicVolume(float volume);
+	float getSavedMusicVolume();
 	float getMusicVolume();
 	void stopMusic();
 	void toggleMusic();

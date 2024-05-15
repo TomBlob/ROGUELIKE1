@@ -11,6 +11,14 @@ Scene::Scene(GameEngine* gameEngine)
 }
 
 void Scene::setPaused(bool paused) {
+	if (paused) {
+		m_game->changeSavedMusicVolume(m_game->getMusicVolume());
+		if (m_game->getMusicVolume() > 10)
+			m_game->changeMusicVolume(10);
+	}
+	else {
+		m_game->changeMusicVolume(m_game->getSavedMusicVolume());
+	}
 	m_paused = paused;
 }
 

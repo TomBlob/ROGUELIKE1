@@ -216,22 +216,50 @@ void Scene_Floor::sMovement() {
 		}
 	}
 
-	if (pInput.up)
+	if (pInput.up) {
 		vel.y -= m_playerConfig.SPEED;
-	if (pInput.down)
+	}
+	else {
+		if (pTransform.velocity.y < 0)
+			vel.y += m_playerConfig.SPEED;
+	}
+	if (pInput.down) {
 		vel.y += m_playerConfig.SPEED;
-	if (pInput.right)
+	}
+	else {
+		if (pTransform.velocity.y > 0)
+			vel.y -= m_playerConfig.SPEED;
+	}
+	if (pInput.right) {
 		vel.x += m_playerConfig.SPEED;
-	if (pInput.left)
+	}
+	else {
+		if (pTransform.velocity.x > 0)
+			vel.x -= m_playerConfig.SPEED;
+	}
+	if (pInput.left) {
 		vel.x -= m_playerConfig.SPEED;
+	}
+	else {
+		if (pTransform.velocity.x < 0)
+			vel.x += m_playerConfig.SPEED;
+	}
 
+	pTransform.velocity += vel;
 
-	if (vel.y > m_playerConfig.MAXSPEED)
-		vel.y = m_playerConfig.MAXSPEED;
-	if (vel.x > m_playerConfig.MAXSPEED)
-		vel.x = m_playerConfig.MAXSPEED;
+	if (pTransform.velocity.y < - m_playerConfig.MAXSPEED) {
+		pTransform.velocity.y = - m_playerConfig.MAXSPEED;
+	}
+	if (pTransform.velocity.y > m_playerConfig.MAXSPEED) {
+		pTransform.velocity.y = m_playerConfig.MAXSPEED;
+	}
+	if (pTransform.velocity.x < - m_playerConfig.MAXSPEED) {
+		pTransform.velocity.x = - m_playerConfig.MAXSPEED;
+	}
+	if (pTransform.velocity.x > m_playerConfig.MAXSPEED) {
+		pTransform.velocity.x = m_playerConfig.MAXSPEED;
+	}
 
-	pTransform.velocity = vel;
 	pTransform.prevPos = pTransform.pos;
 	pTransform.pos += pTransform.velocity;
 }
@@ -276,6 +304,7 @@ void Scene_Floor::sDoAction(const Action& action) {
 				}
 				else {
 					m_game->resetMusicInit();
+					m_game->changeMusicVolume(m_game->getSavedMusicVolume());
 					m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game));
 				}
 			}

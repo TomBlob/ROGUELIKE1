@@ -163,9 +163,11 @@ void GameEngine::changeResolution(size_t width, size_t height) {
 
 	if (m_fullscreen) {
 		m_window.create(sf::VideoMode(m_width, m_height), "ROGUELIKE", sf::Style::Fullscreen);
+		m_window.setFramerateLimit(60);
 	}
 	else {
 		m_window.create(sf::VideoMode(m_width, m_height), "ROGUELIKE");
+		m_window.setFramerateLimit(60);
 	}
 }
 
@@ -194,6 +196,14 @@ void GameEngine::setupMusic(std::string path, bool loop) {
 void GameEngine::changeMusicVolume(float volume){
 	m_music.setVolume(volume);
 	m_musicVolume = volume;
+}
+
+void GameEngine::changeSavedMusicVolume(float volume) {
+	m_savedMusicVolume = volume;
+}
+
+float GameEngine::getSavedMusicVolume() {
+	return m_savedMusicVolume;
 }
 
 float GameEngine::getMusicVolume() {
@@ -242,7 +252,7 @@ std::string GameEngine::generateFloor(int floorNum)
 	}
 
 	file << "Player\t" << (m_window.getSize().x / 64.0f) / 2.0f << "\t" << (m_window.getSize().y / 64.0f) / 2.0f << "\t"
-		<< "32\t48\t5\t10";
+		<< "32\t48\t0.5\t7";
 
 	file.close();
 
