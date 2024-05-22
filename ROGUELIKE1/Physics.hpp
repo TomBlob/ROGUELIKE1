@@ -6,4 +6,5 @@
 namespace Physics {
 	sf::Vector2f GetOverlap(ptr<Entity> a, ptr<Entity> b);
 	sf::Vector2f GetPreviousOverlap(ptr<Entity> a, ptr<Entity> b);
+	bool		 IsCollision(ptr<Entity> a, ptr<Entity> b);
 }

@@ -31,6 +31,7 @@
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="roguelike1.cpp" />
     <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="Room.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Scene_Floor.cpp" />
     <ClCompile Include="Scene_Menu.cpp" />
@@ -46,10 +47,12 @@
     <ClInclude Include="EntityManager.hpp" />
     <ClInclude Include="GameEngine.hpp" />
     <ClInclude Include="Physics.hpp" />
+    <ClInclude Include="Room.hpp" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="Scene_Floor.hpp" />
     <ClInclude Include="Scene_Menu.hpp" />
     <ClInclude Include="Scene_Settings.hpp" />
+    <ClInclude Include="VectorHelp.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="fonts\bookos.ttf" />
@@ -59,6 +62,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\tiles\greyBrick.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

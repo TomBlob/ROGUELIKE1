@@ -53,6 +53,8 @@ public:
 	bool sameResolutions(size_t width);
 	void updateConfigFile(std::string path);
 
+	sf::Vector2f getViewCenter() const;
+
 	void resetMusicInit();
 	bool getMusicInitialized();
 	void setupMusic(std::string path, bool loop);
@@ -64,5 +66,4 @@ public:
 	void toggleMusic();
 
 	int getCurrentFloor();
-	std::string generateFloor(int floorNum);
 };

@@ -151,6 +151,10 @@ void GameEngine::updateConfigFile(std::string path) {
 	file.close();
 }
 
+sf::Vector2f GameEngine::getViewCenter() const {
+	return m_window.getView().getCenter();
+}
+
 bool GameEngine::sameResolutions(size_t width) {
 	if (m_width != width) return false;
 	return true;
@@ -226,35 +230,4 @@ void GameEngine::toggleMusic() {
 int GameEngine::getCurrentFloor()
 {
 	return m_currentFloor;
-}
-
-std::string GameEngine::generateFloor(int floorNum)
-{
-	std::string path = "levels/floor" + std::to_string(floorNum) + ".txt";
-	std::ofstream file(path);
-
-	if (!file.is_open()) {
-		std::cerr << "Error opening file : " + path << std::endl;
-		exit(1);
-	}
-
-	for (int i = 0; i < 51; i++) {
-		for (int j = 0; j < 90; j++) {
-			if (i == 0 || i == 16 || i == 17 || i == 33 || i == 34 || i == 50
-				|| j == 0 || j == 29 || j == 30 || j == 59 || j == 60 || j == 89) {
-				file << "Tile\tGreyBrick\t" << j << "\t" << i << std::endl;
-			}
-		}
-	}
-
-	for (int k = 0; k < 2; k++) {
-		file << "Button\tPauseButton\t" << k;
-	}
-
-	file << "Player\t" << (m_window.getSize().x / 64.0f) / 2.0f << "\t" << (m_window.getSize().y / 64.0f) / 2.0f << "\t"
-		<< "32\t48\t0.5\t7";
-
-	file.close();
-
-	return path;
 }

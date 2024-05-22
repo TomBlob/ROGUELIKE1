@@ -63,8 +63,9 @@ void Scene_Menu::sDoAction(const Action& action) {
 
 			case 2:
 			{
+
 				std::string title = "FLOOR" + std::to_string(m_game->getCurrentFloor());
-				m_game->changeScene(title, std::make_shared<Scene_Floor>(m_game, m_game->generateFloor(m_game->getCurrentFloor())));
+				m_game->changeScene(title, std::make_shared<Scene_Floor>(m_game, 10));
 				break;
 			}
 			case 3:

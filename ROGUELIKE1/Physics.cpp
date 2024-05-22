@@ -32,3 +32,11 @@ sf::Vector2f Physics::GetPreviousOverlap(ptr<Entity> a, ptr<Entity> b)
 
 	return { ox, oy };
 }
+
+bool Physics::IsCollision(ptr<Entity> a, ptr<Entity> b)
+{
+	sf::Vector2f overlap(GetOverlap(a,b));
+	if (overlap.x > 0 && overlap.y > 0)
+		return true;
+	return false;
+}
