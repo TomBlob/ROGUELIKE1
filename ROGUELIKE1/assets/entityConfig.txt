@@ -1,0 +1,2 @@
+Player	32	48	0.5		7	Sword
+Bug		20	20	1	4	50	Bite

@@ -12,12 +12,12 @@ enum FadeState { None, FadeIn, FadeOut };
 class Scene_Floor : public Scene {
 
 	struct PlayerConfig {
-		float X, Y, CX, CY, SPEED, MAXSPEED;
+		float CX, CY, SPEED, MAXSPEED;
 		std::string WEAPON;
 	};
 
 	struct BugConfig {
-		float X, Y, CX, CY, SPEED, MAXSPEED;
+		float CX, CY, SPEED, MAXSPEED;
 		int HP;
 		std::string ATTACK;
 	};
@@ -69,6 +69,9 @@ protected:
 	bool simulateRoomPlacement(sf::Vector2i placement);
 
 	void sMoveEntity(sf::Vector2f roomPos, int entry, ptr<Entity> e);
+	void loadEntityConfig(std::string path);
+
+	sf::Vector2f random360Move(int speed);
 
 	void cleanRooms();
 	void changeRoom(int entry);

@@ -6,6 +6,7 @@ Texture		TexGuyWalkSide			assets/player/guyWalkSide.png
 Texture		TexGuyWalkUp			assets/player/guyWalkUp.png
 Texture		TexBugWalk				assets/enemies/BugWalk.png
 Texture		TexBugHurt				assets/enemies/BugHurt.png
+Texture		TexBugStand				assets/enemies/BugStand.png
 Animation	GreyBrick		TexGreyBrick	1	0
 Animation	PauseButton		TexPauseButton	1	0
 Animation	GuyStand		TexGuyStand		1	0
@@ -14,4 +15,5 @@ Animation	GuyWalkSide		TexGuyWalkSide	3	10
 Animation	GuyWalkUp		TexGuyWalkUp	3	10
 Animation	BugWalk			TexBugWalk		3	20
 Animation	BugHurt			TexBugHurt		1	0
+Animation	BugStand		TexBugStand		1	0
 Font	Bookos	fonts/bookos.ttf

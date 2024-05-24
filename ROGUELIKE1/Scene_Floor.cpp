@@ -68,13 +68,14 @@ void Scene_Floor::loadLevel(const std::string& path) {
 
 		if (str == "Tile") {
 			std::string type;
-			int x, y;
+			int x, y, roomX, roomY;
 
-			file >> type >> x >> y;
+			file >> type >> x >> y >> roomX >> roomY;
 			auto e = m_entityManager.addEntity("Tile");
 
 			if (type == "GreyBrick") {
 				e->addComponent<CAnimation>(m_game->assets().getAnimation(type), true);
+				e->addComponent<CRoom>(sf::Vector2i(roomX, roomY));
 				e->addComponent<CTransform>(gridToMidPixel(64 * x, static_cast<int>(m_game->window().getSize().y) - 64 * y, e));
 				e->getComponent<CTransform>().prevPos = e->getComponent<CTransform>().pos;
 				e->getComponent<CTransform>().scale.x = 64 / e->getComponent<CAnimation>().animation.getSize().x;
@@ -96,15 +97,9 @@ void Scene_Floor::loadLevel(const std::string& path) {
 				e->getComponent<CTransform>().scale.y = 64 / e->getComponent<CAnimation>().animation.getSize().y;
 			}
 		}
-		else if (str == "Player") {
-			file >> m_playerConfig.X >> m_playerConfig.Y >> m_playerConfig.CX >> m_playerConfig.CY >> m_playerConfig.SPEED
-				>> m_playerConfig.MAXSPEED >> m_playerConfig.WEAPON;
-		}
-		else if (str == "Enemy") {
-			file >> m_bugConfig.X >> m_bugConfig.Y >> m_bugConfig.CX >> m_bugConfig.CY >> m_bugConfig.SPEED
-				>> m_bugConfig.MAXSPEED >> m_bugConfig.HP >> m_bugConfig.ATTACK;
-		}
 	}
+
+	loadEntityConfig("assets/entityConfig.txt");
 
 	spawnPlayer();
 	spawnEnemy();
@@ -114,19 +109,22 @@ void Scene_Floor::spawnPlayer() {
 	
 	m_player = m_entityManager.addEntity("Player");
 	m_player->addComponent<CAnimation>(m_game->assets().getAnimation("GuyStand"), true);
+	m_player->addComponent<CRoom>();
 	m_player->addComponent<CInput>();
 	m_player->addComponent<CState>("Standing");
-	m_player->addComponent<CTransform>(gridToMidPixel(64 * m_playerConfig.X, m_game->window().getSize().y - 64 * m_playerConfig.Y, m_player));
+	m_player->addComponent<CTransform>(gridToMidPixel(m_game->window().getSize().x / 2.0f, m_game->window().getSize().y / 2.0f, m_player));
 	m_player->getComponent<CTransform>().scale.x = 64 / m_player->getComponent<CAnimation>().animation.getSize().x;
 	m_player->getComponent<CTransform>().scale.y = 64 / m_player->getComponent<CAnimation>().animation.getSize().y;
 	m_player->addComponent<CBoundingBox>(sf::Vector2f(m_playerConfig.CX, m_playerConfig.CY));
 }
 
 void Scene_Floor::spawnEnemy() {
-	auto e = m_entityManager.addEntity("Enemy");
-	e->addComponent<CAnimation>(m_game->assets().getAnimation("BugWalk"), true);
-	e->addComponent<CState>("Moving");
-	e->addComponent<CTransform>(gridToMidPixel(64 * m_bugConfig.X, m_game->window().getSize().y - 64 * m_bugConfig.Y, e));
+	auto e = m_entityManager.addEntity("Bug");
+	e->addComponent<CAnimation>(m_game->assets().getAnimation("BugStand"), true);
+	e->addComponent<CRoom>();
+	e->addComponent<CState>("Waiting");
+	e->addComponent<CTimer>();
+	e->addComponent<CTransform>(gridToMidPixel(64 * 5, m_game->window().getSize().y - 64 * 5, e));
 	e->getComponent<CTransform>().scale.x = 64 / e->getComponent<CAnimation>().animation.getSize().x;
 	e->getComponent<CTransform>().scale.y = 64 / e->getComponent<CAnimation>().animation.getSize().y;
 	e->addComponent<CBoundingBox>(sf::Vector2f(m_bugConfig.CX, m_bugConfig.CY));
@@ -244,6 +242,31 @@ void Scene_Floor::sMovement() {
 		}
 	}
 
+	// state update for bug
+
+	for (auto& bug : m_entityManager.getEntities()) {
+		if (bug->tag() == "Bug") {
+			auto& bTransform = bug->getComponent<CTransform>();
+			auto& bState = bug->getComponent<CState>();
+			auto& bTimer = bug->getComponent<CTimer>();
+			
+			if (bTimer.timer.getElapsedTime().asSeconds() > 1.0f) {
+				bTimer.timer.restart();
+				if (bState.state == "Moving") {
+					bState.state = "Waiting";
+					bTransform.velocity = { 0, 0 };
+				}
+				else if (bState.state == "Waiting") {
+					bState.state = "Moving";
+					bTransform.velocity = random360Move(m_bugConfig.MAXSPEED);
+				}
+			}
+
+			bTransform.prevPos = bTransform.pos;
+			bTransform.pos += bTransform.velocity;
+		}
+	}
+
 	//update speed for a side if that side's appropriate key is held, otherwise if player still moving, reduce velocity by speed
 	if (pInput.up) {
 		vel.y -= m_playerConfig.SPEED;
@@ -304,6 +327,22 @@ void Scene_Floor::sLifespan() {
 	}
 }
 
+sf::Vector2f Scene_Floor::random360Move(int speed) {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<> distrib(- speed, speed);
+	float randomX = distrib(gen);
+	float randomY = sqrt(pow(speed, 2) - pow(randomX, 2));
+
+	int rando = rand() % 2;
+
+	if (rando == 0) {
+		randomY = -randomY;
+	}
+
+	return { randomX, randomY };
+}
+
 void Scene_Floor::sCollision() {
 	auto& pTransform = m_player->getComponent<CTransform>();
 
@@ -335,7 +374,7 @@ void Scene_Floor::sCollision() {
 	sf::Vector2f overlap;
 	sf::Vector2f prevOverlap;
 	for (auto tile : m_entityManager.getEntities()) {
-		if (tile->tag() == "Tile") {
+		if (tile->tag() == "Tile" && tile->getComponent<CRoom>().roomId == m_currentRoom->getRoomPos()) {
 			auto& eTransform = tile->getComponent<CTransform>();
 			overlap = Physics::GetOverlap(m_player, tile);
 			prevOverlap = Physics::GetPreviousOverlap(m_player, tile);
@@ -356,6 +395,34 @@ void Scene_Floor::sCollision() {
 					}
 					else {
 						pTransform.pos.x += overlap.x;
+					}
+				}
+			}
+
+			for (auto& bug : m_entityManager.getEntities()) {
+				if (bug->tag() == "Bug") {
+					auto& bTransform = bug->getComponent<CTransform>();
+					overlap = Physics::GetOverlap(bug, tile);
+					prevOverlap = Physics::GetPreviousOverlap(bug, tile);
+
+					if (overlap.x > 0 && overlap.y > 0) {
+						if (prevOverlap.x > 0) {
+							if (bTransform.pos.y < eTransform.pos.y) {
+								bTransform.pos.y -= overlap.y;
+							}
+							else {
+								bTransform.pos.y += overlap.y;
+							}
+						}
+						else if (prevOverlap.y > 0) {
+							if (bTransform.pos.x < eTransform.pos.x) {
+								bTransform.pos.x -= overlap.x;
+
+							}
+							else {
+								bTransform.pos.x += overlap.x;
+							}
+						}
 					}
 				}
 			}
@@ -387,6 +454,26 @@ void Scene_Floor::sMoveEntity(sf::Vector2f roomPos, int entry, ptr<Entity> e) {
 	default:
 		break;
 	}
+
+}
+
+void Scene_Floor::loadEntityConfig(std::string path) {
+
+	std::ifstream file(path);
+	std::string str;
+
+	while (file.good() && str != " ") {
+		file >> str;
+
+		if (str == "Player") {
+			file >> m_playerConfig.CX >> m_playerConfig.CY >> m_playerConfig.SPEED >> m_playerConfig.MAXSPEED >> m_playerConfig.WEAPON;
+		}
+		else if (str == "Bug") {
+			file >> m_bugConfig.CX >> m_bugConfig.CY >> m_bugConfig.SPEED >> m_bugConfig.MAXSPEED >> m_bugConfig.HP >> m_bugConfig.ATTACK;
+		}
+	}
+
+
 
 }
 
@@ -476,6 +563,27 @@ void Scene_Floor::sAnimation() {
 		break;
 	}
 
+	for (auto& bug : m_entityManager.getEntities()) {
+		if (bug->tag() == "Bug") {
+			auto& bState = bug->getComponent<CState>();
+			auto& currentAnim = bug->getComponent<CAnimation>().animation;
+
+			while (true) {
+				if (bState.state == "Moving") {
+					if (currentAnim.getName() == "BugWalk")
+						bug->addComponent<CAnimation>(m_game->assets().getAnimation("BugWalk"), true);
+					break;
+				}
+				if (bState.state == "Standing") {
+					if (currentAnim.getName() == "BugStand")
+						bug->addComponent<CAnimation>(m_game->assets().getAnimation("BugStand"), true);
+					break;
+				}
+				break;
+			}
+		}
+	}
+
 	for (auto& e : m_entityManager.getEntities()) {
 		if (e->hasComponent<CAnimation>()) {
 			e->getComponent<CAnimation>().animation.update();
@@ -517,7 +625,7 @@ void Scene_Floor::sRender() {
 		for (auto e : m_entityManager.getEntities()) {
 			auto& transform = e->getComponent<CTransform>();
 
-			if (e->hasComponent<CAnimation>() && e->tag() != "Button" && !m_paused) {
+			if (e->hasComponent<CAnimation>() && e->tag() != "Button" && !m_paused && e->getComponent<CRoom>().roomId == m_currentRoom->getRoomPos()) {
 
 				auto& animation = e->getComponent<CAnimation>().animation;
 				animation.getSprite().setRotation(transform.angle);
@@ -696,22 +804,22 @@ std::string Scene_Floor::generateFloor(int floorNum) {
 			// Write top border ** removed + 1 to midX since horizontal borders are even and verticals are odd
 			for (int x = roomPos.x * 30; x < (roomPos.x + 1) * 30; x++) {
 				if (!(room->getNeighborRoom(0) != nullptr && x >= midX - 1 && x <= midX))
-					file << "Tile\tGreyBrick\t" << x << "\t" << roomPos.y * 17 + 16 << std::endl;
+					file << "Tile\tGreyBrick\t" << x << "\t" << roomPos.y * 17 + 16 << "\t" << roomPos.x << "\t" << roomPos.y << std::endl;
 			}
 			// Write left border
 			for (int y = roomPos.y * 17; y < (roomPos.y + 1) * 17; y++) {
 				if (!(room->getNeighborRoom(2) != nullptr && y >= midY - 1 && y <= midY + 1))
-					file << "Tile\tGreyBrick\t" << roomPos.x * 30 << "\t" << y << std::endl;
+					file << "Tile\tGreyBrick\t" << roomPos.x * 30 << "\t" << y << "\t" << roomPos.x << "\t" << roomPos.y << std::endl;
 			}
 			// Write bottom border
 			for (int x = roomPos.x * 30; x < (roomPos.x + 1) * 30; x++) {
 				if (!(room->getNeighborRoom(1) != nullptr && x >= midX - 1 && x <= midX))
-					file << "Tile\tGreyBrick\t" << x << "\t" << roomPos.y * 17 << std::endl;
+					file << "Tile\tGreyBrick\t" << x << "\t" << roomPos.y * 17 << "\t" << roomPos.x << "\t" << roomPos.y << std::endl;
 			}
 			// Write right border
 			for (int y = roomPos.y * 17; y < (roomPos.y + 1) * 17; y++) {
 				if (!(room->getNeighborRoom(3) != nullptr && y >= midY - 1 && y <= midY + 1))
-					file << "Tile\tGreyBrick\t" << (roomPos.x + 1) * 30 - 1 << "\t" << y << std::endl;
+					file << "Tile\tGreyBrick\t" << (roomPos.x + 1) * 30 - 1 << "\t" << y << "\t" << roomPos.x << "\t" << roomPos.y << std::endl;
 			}
 		}
 	}
@@ -719,12 +827,6 @@ std::string Scene_Floor::generateFloor(int floorNum) {
 	for (int k = 0; k < 2; k++) {
 		file << "Button\tPauseButton\t" << k << std::endl;
 	}
-
-	file << "Player\t" << (m_game->window().getSize().x / 64.0f) / 2.0f << "\t" << (m_game->window().getSize().y / 64.0f) / 2.0f << "\t"
-		<< "32\t48\t0.5\t7" << std::endl;
-
-	file << "Enemy\t" << (m_game->window().getSize().x / 64.0f) / 2.0f << "\t" << (m_game->window().getSize().y / 64.0f) / 2.0f << "\t"
-		<< "20\t20\t1\t4\t50\tBite" << std::endl;
 
 	file.close();
 
@@ -823,6 +925,7 @@ void Scene_Floor::updateFade() {
 
 void Scene_Floor::changeRoom(int entry) {
 	m_currentRoom = m_currentRoom->getNeighborRoom(entry);
+	m_player->getComponent<CRoom>().roomId = m_currentRoom->getRoomPos();
 	sMoveEntity(m_currentRoom->getRealPos(), getOppositeSide(entry), m_player);
 	m_fadeRect.setPosition(m_currentRoom->getRealPos().x, m_currentRoom->getRealPos().y - m_game->window().getSize().y);
 	sf::View view = m_game->window().getView();

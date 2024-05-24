@@ -109,3 +109,25 @@ public :
 		rectangle.setOrigin(xy.x / 2.0f, xy.y / 2.0f);
 	}
 };
+
+class CTimer : public Component {
+
+public:
+	sf::Clock	timer;
+
+	CTimer() {
+		timer.restart();
+	}
+};
+
+class CRoom : public Component {
+
+public:
+	sf::Vector2i	roomId = { 0, 0 };
+
+	CRoom() {}
+	CRoom(sf::Vector2i id) {
+		roomId.x = id.x;
+		roomId.y = id.y;
+	}
+};
